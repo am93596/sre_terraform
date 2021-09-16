@@ -27,7 +27,21 @@ provider "aws" {
     - AWS keys setup (already done)
     - public IP
     - type of instance: `t2.micro`
-- Add them to the file, then run the command `terraform plan`
+- Add them to the file as follows:
+```
+# Let's start with launching an EC2 instance using the app AMI
+# define the resource name
+
+resource "aws_instance" "app_instance" {
+    ami = "ami-00e8ddf087865b27f"
+    instance_type = "t2.micro"
+    associate_public_ip_address = true
+    tags = {
+       Name = "sre_amy_terraform_app"
+    }
+}
+```
+- then run the command `terraform plan`
 - That should tell you all the things that Terraform will do
 - Then run `terraform apply` - it will ask if you want to perform the actions - enter `yes`
 - That tells Terraform to run the actions it listed when you ran `terraform plan`
