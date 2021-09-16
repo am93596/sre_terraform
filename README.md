@@ -33,7 +33,7 @@ provider "aws" {
 # define the resource name
 
 resource "aws_instance" "app_instance" {
-    ami = "ami-00e8ddf087865b27f"
+    ami = "ami-044774d37be69e57e"
     instance_type = "t2.micro"
     associate_public_ip_address = true
     tags = {
@@ -46,3 +46,39 @@ resource "aws_instance" "app_instance" {
 - Then run `terraform apply` - it will ask if you want to perform the actions - enter `yes`
 - That tells Terraform to run the actions it listed when you ran `terraform plan`
 - Should give you a success message (`Apply complete!"`)
+- To terminate the instances, enter `terraform destroy`. It will ask if you want to perform the actions - enter `yes`
+- Should give you a success message - `Destroy complete`
+
+- Create file called `variable.tf`
+
+### Create A VPC
+- In the main.tf file, comment out the EC2 instance code, and paste this above it:
+```
+# Adding a VPC
+resource "aws_vpc" "sre_amy_terraform_vpc" {
+  cidr_block = "10.102.0.0/16"
+  instance_tenancy = "default"
+
+  tags = {
+    Name = "sre_amy_terraform_vpc"
+  }
+}
+```
+- In Git Bash, run `terraform plan` and `terraform apply`
+# Adding a subnet
+- In the main.tf file, and paste this below the VPC code:
+```
+# Adding a public subnet
+resource "aws_subnet" "sre_amy_terraform_public_subnet" {
+    vpc_id = "vpc-05a2bec2286496735"
+    cidr_block = "10.102.1.0/24"
+    map_public_ip_on_launch = "true"    # Makes the subnet public
+    availability_zone = "eu-west-1a"
+
+    tags = {
+      "Name" = "sre_amy_terraform_public_subnet"
+    }
+}
+```
+- In Git Bash, run `terraform plan` and `terraform apply`
+
