@@ -1,23 +1,37 @@
  Terraform Orchestration
 ## What is terraform
+Terraform is an Infrastructure As Code tool used to automate orchestration tasks.
 ### Why Terraform
+Terraform is a user-friendly tool that helps you automate tasks such as creating an EC2 instance, setting up a VPC, and making the security groups for your EC2 instances. It is cloud independent, so it can be used to automate provisioning tasks for any cloud service, not just AWS. It is also lightweight, so it doesn't slow down your computer
 #### Setting up Terraform
-##### Securing AWS keys for Terraform
+1. Go to the [official Terraform downloads page](https://www.terraform.io/downloads.html), and download the version for your operating system.  
+2. Then unzip the file, and put it in your preferred location. (e.g. `C:\Users\amurp\terraform`)  
+3. Copy the path for the location.  
+4. Navigate to `Settings` -> `Advanced system settings`. Click `Environment Variables`. 
+5. Then, in the `User variables` section, click `Path` then `Edit`.  
+6. Click `New`, then paste the location and click `OK` for all 3 open pages.  
+![terraform_env_var_img](https://user-images.githubusercontent.com/88166874/133647750-b30cd91b-33ba-4016-8b2b-fe823feb1a7d.PNG)  
+5. To check that your installation is working, open a new command prompt, and run `terraform`; it should return a list of all the possible terraform commands:  
+![terraform_commands_img](https://user-images.githubusercontent.com/88166874/133648233-c46a2598-423b-45d5-bcc7-d54b8a5eaa0b.PNG)  
 
-- Create env var to secure AWS keys
-- Restart the terminal
-- Create a file called main.tf
-- Add the code to initialise terraform with provider AWS
+##### Securing AWS keys for Terraform
+1. Repeat step 4 of `Setting up Terraform` (above).
+2. Then, in the `User variables` section, click `New`, and name the variable `AWS_ACCESS_KEY_ID`. In the `value` input box, paste in your AWS access key. Then click `OK`.  
+3. Click `New` again, and name this variable `AWS_SECRET_ACCESS_KEY`. In the `value` input box, paste in your AWS secret key. Then click `OK`.  
+4. Restart your command prompt/git bash/vs code.  
+
+### Initialise Terraform
+1. Create a directory for this project  
+2. In that directory, create a file called main.tf  
+3. In the file, paste in the following code to initialise terraform with provider AWS:  
 
 ```
 provider "aws" {
     region = "eu-west-1"
-
 }
 ```
-
-- Let's run this code with `terraform init`
-- Should get `Terraform has been successfully initialized!` message
+4. Let's run this code in a new terminal with `terraform init`  
+> Should get `Terraform has been successfully initialized!` message  
 
 ### Creating Resources on AWS
 - Let's start with launching an EC2 instance using the app AMI
