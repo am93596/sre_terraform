@@ -36,7 +36,7 @@ provider "aws" {
 ### Creating Resources on AWS
 - Let's start with launching an EC2 instance using the app AMI
 - We need:
-    - ami ID: ` `
+    - ami ID
     - `sre_key.pem` file
     - AWS keys setup (already done)
     - public IP
