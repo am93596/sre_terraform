@@ -1,8 +1,13 @@
- Terraform Orchestration
+# Terraform Orchestration
 ## What is terraform
 Terraform is an Infrastructure As Code tool used to automate orchestration tasks.
 ### Why Terraform
-Terraform is a user-friendly tool that helps you automate tasks such as creating an EC2 instance, setting up a VPC, and making the security groups for your EC2 instances. It is cloud independent, so it can be used to automate provisioning tasks for any cloud service, not just AWS. It is also lightweight, so it doesn't slow down your computer
+Terraform is a user-friendly tool that helps you automate tasks such as creating an EC2 instance, setting up a VPC, and making the security groups for your EC2 instances. It is cloud independent, so it can be used to automate provisioning tasks for any cloud service, not just AWS. It is also lightweight, so it doesn't slow down your computer.
+
+#### Terraform Default File Structure
+![241359712_285769609718410_3615795229505648646_n](https://user-images.githubusercontent.com/88166874/133976782-bd9d0667-ffda-487f-ae09-9a15ce0bced5.jpg)
+
+
 #### Setting up Terraform
 1. Go to the [official Terraform downloads page](https://www.terraform.io/downloads.html), and download the version for your operating system.  
 2. Then unzip the file, and put it in your preferred location. (e.g. `C:\Users\amurp\terraform`)  
