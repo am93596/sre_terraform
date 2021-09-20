@@ -195,7 +195,39 @@ resource "aws_lb_listener" "sre_amy_terraform_listener" {
 }
 
 # target group attachment
-
+resource "aws_lb_target_group_attachment" "sre_amy_terraform_tg_attachment" {
+  target_group_arn = aws_lb_target_group.sre_amy_terraform_target_group.arn
+  target_id = aws_instance.app_instance.id
+  port = 80
+}
 # auto scaling group from launch config
+resource "aws_autoscaling_group" "sre_amy_terraform_autoscaling_group" {
+    name = "sre_amy_terraform_autoscaling_group"
+
+    min_size = 1
+    desired_capacity = 1
+    max_size = 3
+
+    vpc_zone_identifier = [
+        aws_subnet.sre_amy_terraform_public_subnet.id,
+        aws_subnet.sre_amy_terraform_private_subnet.id
+    ]
+
+    launch_configuration = aws_launch_configuration.sre_amy_app_terraform_launch_config.name
+}
 
 # autoscaling policy
+resource "aws_autoscaling_policy" "sre_amy_terraform_as_policy" {
+    name = "sre_amy_terraform_as_policy"
+    policy_type = "TargetTrackingScaling"
+    estimated_instance_warmup = 100
+
+    autoscaling_group_name = aws_autoscaling_group.sre_amy_terraform_autoscaling_group.name
+
+    target_tracking_configuration {
+        predefined_metric_specification {
+            predefined_metric_type = "ASGAverageCPUUtilization"
+        }
+        target_value = 50.0
+    }
+}
