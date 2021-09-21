@@ -118,7 +118,7 @@ resource "aws_security_group" "sre_amy_terraform_db_sg"  {
         from_port = "27017"
         to_port = "27017"
         protocol = "tcp"
-        cidr_blocks = ["${aws_instance.app_instance.public_ip}/32"]
+        cidr_blocks = ["0.0.0.0/0"]
     }
     egress {
         from_port = 0
@@ -157,6 +157,9 @@ resource "aws_launch_configuration" "sre_amy_app_terraform_launch_config" {
   name = "sre_amy_app_terraform_launch_config"
   image_id = var.webapp_ami_id
   instance_type = "t2.micro"
+  key_name = var.aws_key_name
+  security_groups = [aws_security_group.sre_amy_terraform_app_sg_2.id]
+  associate_public_ip_address = true
 }
 
 # Application Load Balancer (ALB)
@@ -226,7 +229,7 @@ resource "aws_autoscaling_policy" "sre_amy_terraform_as_policy" {
 
     target_tracking_configuration {
         predefined_metric_specification {
-            predefined_metric_type = "ASGAverageCPUUtilization"
+            predefined_metric_type = "ASGAverageNetworkIn"
         }
         target_value = 50.0
     }
