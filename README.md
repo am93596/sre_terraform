@@ -1,7 +1,7 @@
 # Terraform Orchestration
 ## What is terraform
 Terraform is an Infrastructure As Code tool used to automate orchestration tasks.
-### Why Terraform
+### Why we use Terraform
 Terraform is a user-friendly tool that helps you automate tasks such as creating an EC2 instance, setting up a VPC, and making the security groups for your EC2 instances. It is cloud independent, so it can be used to automate provisioning tasks for any cloud service, not just AWS. It is also lightweight, so it doesn't slow down your computer.
 
 #### Terraform Default File Structure  
