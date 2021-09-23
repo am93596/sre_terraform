@@ -1,7 +1,7 @@
 # Terraform Orchestration
 ## What is terraform
 Terraform is an Infrastructure As Code tool used to automate orchestration tasks.
-### Why Terraform
+### Why we use Terraform
 Terraform is a user-friendly tool that helps you automate tasks such as creating an EC2 instance, setting up a VPC, and making the security groups for your EC2 instances. It is cloud independent, so it can be used to automate provisioning tasks for any cloud service, not just AWS. It is also lightweight, so it doesn't slow down your computer.
 
 #### Terraform Default File Structure  
@@ -258,8 +258,29 @@ resource "aws_instance" "app_instance" {
 		type = "ssh"
 		user = "ubuntu"
 		private_key = var.aws_key_path
-		host = aws_instance.app_instance.public_ip
-	}
+		host = db_instance.db_instance.public_ip
+	} 
+    # this doesn't work because you can't have more than 1 `command`
+    # provisioner "local-exec" {
+    #   command = <<EOT
+    #     cd app
+    #     export DB_HOST=${aws_instance.db_instance.public_ip}:27017/posts/
+    #     node seeds/seed.js
+    #     npm start
+    #   EOT
+
+      # command = "cd app"
+      # command = "export DB_HOST=${aws_instance.db_instance.public_ip}:27017/posts/"
+      # command = "node seeds/seed.js"
+      # command = "npm start"
+
+    #   connection {
+    #     type = "ssh"
+		#     user = "ubuntu"
+	  #   	private_key = var.aws_key_path
+	  #   	host = aws_instance.app_instance.public_ip
+    #   }
+    # }
 }
 
 # Adding a private subnet
@@ -390,6 +411,7 @@ resource "aws_autoscaling_group" "sre_amy_terraform_autoscaling_group" {
 }
 
 # autoscaling policy
+# TODO: make one for RequestCountPerTarget
 resource "aws_autoscaling_policy" "sre_amy_terraform_as_policy" {
     name = "sre_amy_terraform_as_policy"
     policy_type = "TargetTrackingScaling"
@@ -399,33 +421,31 @@ resource "aws_autoscaling_policy" "sre_amy_terraform_as_policy" {
 
     target_tracking_configuration {
         predefined_metric_specification {
-            predefined_metric_type = "ASGAverageNetworkIn"
+            predefined_metric_type = "ASGAverageCPUUtilization"
         }
-        target_value = 50.0
+        target_value = 3.0
     }
 }
-```
-- Make sure you have the relevant variables in a file called `variable.tf`
-- Make an `output.tf` file with the following contents:
-```terraform
-output "npm_start_command" {
-    value = "npm start"
+
+resource "aws_autoscaling_policy" "sre_amy_scale_down_policy" {
+  name = "sre_amy_scale_down_policy"
+  scaling_adjustment = -1
+  adjustment_type = "ChangeInCapacity"
+  cooldown = 300
+  autoscaling_group_name = aws_autoscaling_group.sre_amy_terraform_autoscaling_group.name
 }
 
-output "node_seeds_command" {
-    value = "node seeds/seed.js"
-}
-
-output "cd_app_command" {
-    value = "cd app"
-}
-
-output "db_host_line" {
-    value = "export DB_HOST=${aws_instance.db_instance.public_ip}:27017/posts/"
-}
-
-output "app_instance_ssh_command" {
-    value = "ssh -i ${var.aws_key_path} ubuntu@${aws_instance.app_instance.public_ip}"
+resource "aws_cloudwatch_metric_alarm" "sre_amy_scale_down_alarm" {
+  alarm_name = "sre_amy_scale_down_alarm"
+  comparison_operator = "LessThanThreshold"
+  metric_name = "NetworkIn"
+  statistic = "Average"
+  threshold = "500000"
+  period = "120"
+  evaluation_periods = "2"
+  namespace = "AWS/EC2"
+  alarm_description = "Monitors ASG EC2 average network in (for scale down policy)"
+  alarm_actions = [aws_autoscaling_policy.sre_amy_scale_down_policy.arn]
 }
 ```
 - Run `terraform plan` and `terraform apply`
